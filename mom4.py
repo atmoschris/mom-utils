@@ -107,15 +107,102 @@ class Modelo_from_dap(UserDict):
 	return field
 
 
-#if __name__ == '__main__':
-urlpath="http://opendap.ccst.inpe.br/Models/CGCM2.1/exp030/20070101.ocean_transport.nc"
-from pydap.client import open_url
-dataset = open_url(urlpath)
-import mom4
-reload(mom4)
-x = mom4.Modelo_from_dap(urlpath = urlpath)
-print dir(x)
+class Modelo_from_nc(UserDict):
+    """
+    """
+    def __init__(self,ncfpath):
+        """
+        """
+        import netCDF4
+        self.dataset = netCDF4.Dataset(ncfpath)
+        self.data = {}
+    def keys(self):
+        keys = self.data.keys()
+	for k in self.dataset.variables.keys():
+	    if k not in keys:
+	        keys.append(k)
+        return keys
+    def __getitem__(self,index):
+        """
+        """
+        if index in self.data.keys():
+            return self.data[index]
+        if index in self.data.keys():
+            return self.data[index]
+        field = self.dataset.variables[index]
+        if (index,) == field.dimensions:
+            self.data[index] = ma.array(field[:])
+            self.data[index].units = field.units
+            return self.data[index]
+        else:
+            data = ma.masked_values(field[:], field.missing_value)
+            data.units = field.units
+            data.long_name = field.long_name
+            data.dimensions = field.dimensions
+            return data
+        #    return self.data[index]
+        return
+
+class Modelo_from_nca(UserDict):
+    """
+    """
+    def __init__(self,ncfpath):
+        """
+        """
+        self.data = {}
+        self.dataset = []
+        for ncf in ncfpath:
+            self.dataset.append(Modelo_from_nc(ncf))
+        #
+        self._build_time()
+        return
+    def _build_time(self):
+        time = numpy.array([])
+        mask = numpy.array([], dtype='bool')
+	for d in self.dataset:
+            time = numpy.append(time, d['time'].data)
+            mask = numpy.append(mask, ma.getmaskarray(d['time']))
+	self.data['time'] = ma.masked_array(time,mask)
+    def keys(self):
+        keys = self.data.keys()
+	for k in self.dataset[0].keys():
+	    if k not in keys:
+	        keys.append(k)
+        return keys
+    def __getitem__(self,index):
+        """
+        """
+        if index in self.data.keys():
+            return self.data[index]
+        if index not in self.keys():
+            return
+
+        dims = self.dataset[0].dataset.variables[index].dimensions
+        if 'time' in dims:
+            if 'time' == dims[0]
+            data = numpy.array([])
+            mask = numpy.array([], dtype='bool')
+            for d in self.dataset:
+                time = numpy.append(data, d[index].data)
+                mask = numpy.append(mask, ma.getmaskarray(d[index]))
+            return = ma.masked_array(time,mask)
+        else:
+	    return self.dataset[0][index]
 
 
+#ncfpath = ["/stornext/grupos/ocean/simulations/exp030/dataout/ic200701/ocean/CGCM/20070101.ocean_transport.nc", "/stornext/grupos/ocean/simulations/exp030/dataout/ic200701/ocean/CGCM/20080101.ocean_transport.nc"]
+#reload(mom4)
+x = Modelo_from_nca(ncfpath)
+x.keys()
+#x['xu_ocean']
+#x['ty_trans']
 
+##if __name__ == '__main__':
+#urlpath="http://opendap.ccst.inpe.br/Models/CGCM2.1/exp030/20070101.ocean_transport.nc"
+#from pydap.client import open_url
+#dataset = open_url(urlpath)
+#import mom4
+#reload(mom4)
+#x = mom4.Modelo_from_dap(urlpath = urlpath)
+#print dir(x)
 
