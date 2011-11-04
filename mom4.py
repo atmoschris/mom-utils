@@ -195,6 +195,8 @@ class Model_profiles(Modelo_from_nc):
         
             !!ATENTION!! There are a lot of problems on this approach for big distances,
               including the borders and the poles.
+
+            Improve it to actually calculate the distances.
         """
         nt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal()).argmin()
         #from fluid.common.distance import distance
@@ -204,8 +206,8 @@ class Model_profiles(Modelo_from_nc):
         #L = ((Lat-lat)**2+((Lon-lon)*fac)**2)**.5
         #L = L*60*1852
 
-        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<rmax]
-        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<rmax]
+        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<(rmax/1856./60.)]
+        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<(rmax/1856./60.)]
 
         profile = {'depth':self['st_ocean']}
         profile['lon'] = self['xt_ocean'][nX[0]:nX[-1]+1]
