@@ -76,7 +76,7 @@ class Modelo_from_dap(UserDict):
 
     def keys(self):
         keys = self.data.keys()
-	for k in self.dataset.keys():
+        for k in self.dataset.keys():
 	    if k not in keys:
 	        keys.append(k)
         return keys
@@ -106,16 +106,29 @@ class Modelo_from_dap(UserDict):
 
 	return field
 
+from UserDict import UserDict
 
-class Modelo_from_nc(UserDict):
+class Modelo_from_nc(dict):
     """
     """
-    def __init__(self,ncfpath):
+    def __init__(self, ncfpath):
         """
         """
+        super(Modelo_from_nc, self).__init__()
         import netCDF4
         self.dataset = netCDF4.Dataset(ncfpath)
         self.data = {}
+	self._set_datetime()
+        return
+    def _set_datetime(self):
+        """
+
+	    Should I really do it right the way, automatically?
+        """
+	if 'time' in self.dataset.variables:
+	    from coards import from_udunits
+	    self.data['datetime'] = ma.array([ from_udunits(v, self.dataset.variables['time'].units) for v in self.dataset.variables['time'][:] ])
+	return
     def keys(self):
         keys = self.data.keys()
 	for k in self.dataset.variables.keys():
@@ -142,6 +155,69 @@ class Modelo_from_nc(UserDict):
             return data
         #    return self.data[index]
         return
+
+
+class Model_profiles(Modelo_from_nc):
+    """
+
+
+    """
+    def __init__(self, ncfpath):
+        super(Model_profiles, self).__init__(ncfpath)
+        self.data = Modelo_from_nc(ncfpath)
+        self.keys = self.data.keys
+        # Unfinished
+        return
+
+    def nearest_profile(self,t,lon,lat,var):
+        """
+        """
+        # --- Model ----
+        # Define the closest time instant
+        #dt = self.['datetime']-t
+        #nt = numpy.arange(dt.shape[0])[dt == min(dt)][0]
+        nt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal()).argmin()
+        # Define the nearest point
+        nx = numpy.absolute(self['xt_ocean']-lon).argmin()
+        ny = numpy.absolute(self['yt_ocean']-lat).argmin()
+        # Extract the temperature profile from the model
+        profile = ma.masked_values(self.dataset.variables[var][nt,:,ny,nx],value=self.dataset.variables[var].missing_value)
+        # Restrict the profile to deeper than 10m, and only good data
+        # The find_z20 can't handle masked arrays
+        #ind = (temp_model.mask==False) & (numpy.absolute(self['depth'])>10)
+        #z = model_ref['depth'][ind]
+        #t = temp_model[ind]
+        return {'depth':self['st_ocean'],var:profile,'lon':self['xt_ocean'][nx],'lat':self['yt_ocean'][ny]}
+        #return profile
+
+    def around_profile(self, t, lon, lat, var, rmax):
+        """
+        
+            !!ATENTION!! There are a lot of problems on this approach for big distances,
+              including the borders and the poles.
+        """
+        nt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal()).argmin()
+        #from fluid.common.distance import distance
+        #Lon, Lat = numpy.meshgrid(model_ref['xt_ocean'], model_ref['yt_ocean'])
+        ##L = distance(lon = Lon, lat = Lat, lon_c = lon, lat_c = lat)
+        #fac = numpy.cos((lat+Lat)/2.*numpy.pi/180)
+        #L = ((Lat-lat)**2+((Lon-lon)*fac)**2)**.5
+        #L = L*60*1852
+
+        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<rmax]
+        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<rmax]
+
+        profile = {'depth':self['st_ocean']}
+        profile['lon'] = self['xt_ocean'][nX[0]:nX[-1]+1]
+        profile['lat'] = self['yt_ocean'][nY[0]:nY[-1]+1]
+
+        profile[var] = ma.masked_values(self.dataset.variables[var][nt,:,nY[0]:nY[-1]+1,nX[0]:nX[-1]+1],value=self.dataset.variables[var].missing_value)
+        #profile = ma.masked_values(self.dataset[var][nt,:,nY:nY+1,nX:nX+1],value=self.dataset[var].missing_value)
+
+        return profile
+
+
+
 
 class Modelo_from_nca(UserDict):
     """
@@ -179,21 +255,21 @@ class Modelo_from_nca(UserDict):
 
         dims = self.dataset[0].dataset.variables[index].dimensions
         if 'time' in dims:
-            if 'time' == dims[0]
+            #if 'time' == dims[0]:
             data = numpy.array([])
             mask = numpy.array([], dtype='bool')
             for d in self.dataset:
                 time = numpy.append(data, d[index].data)
                 mask = numpy.append(mask, ma.getmaskarray(d[index]))
-            return = ma.masked_array(time,mask)
+            return ma.masked_array(time,mask)
         else:
 	    return self.dataset[0][index]
 
 
 #ncfpath = ["/stornext/grupos/ocean/simulations/exp030/dataout/ic200701/ocean/CGCM/20070101.ocean_transport.nc", "/stornext/grupos/ocean/simulations/exp030/dataout/ic200701/ocean/CGCM/20080101.ocean_transport.nc"]
 #reload(mom4)
-x = Modelo_from_nca(ncfpath)
-x.keys()
+#x = Modelo_from_nca(ncfpath)
+#x.keys()
 #x['xu_ocean']
 #x['ty_trans']
 
