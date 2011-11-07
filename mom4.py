@@ -148,6 +148,9 @@ class Modelo_from_nc(dict):
             self.data[index].units = field.units
             return self.data[index]
         else:
+            # Need to be able to get only a slice before convert 
+            #   to masked array, otherwise is a problem for huge
+            #   files
             data = ma.masked_values(field[:], field.missing_value)
             data.units = field.units
             data.long_name = field.long_name
@@ -155,6 +158,11 @@ class Modelo_from_nc(dict):
             return data
         #    return self.data[index]
         return
+    def get_data(self,index,slice):
+        """
+        """
+        field = self.dataset.variables[index]
+        return ma.masked_values(field[slice], field.missing_value)
 
 
 class Model_profiles(Modelo_from_nc):
