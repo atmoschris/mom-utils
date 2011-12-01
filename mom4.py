@@ -198,7 +198,7 @@ class Model_profiles(Modelo_from_nc):
         return {'depth':self['st_ocean'],var:profile,'lon':self['xt_ocean'][nx],'lat':self['yt_ocean'][ny]}
         #return profile
 
-    def around_profile(self, t, lon, lat, var, rmax):
+    def around_profile(self, t, lon, lat, var, dLmax, dtmax=None):
         """
         
             !!ATENTION!! There are a lot of problems on this approach for big distances,
@@ -206,7 +206,14 @@ class Model_profiles(Modelo_from_nc):
 
             Improve it to actually calculate the distances.
         """
-        nt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal()).argmin()
+        dt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal())
+        if tmax == None:
+            nt = dt.argmin()
+        #else:
+        #    #from datetime import timedelta
+        #    #dt = timedelta(tmax)
+
+ 
         #from fluid.common.distance import distance
         #Lon, Lat = numpy.meshgrid(model_ref['xt_ocean'], model_ref['yt_ocean'])
         ##L = distance(lon = Lon, lat = Lat, lon_c = lon, lat_c = lat)
@@ -214,12 +221,16 @@ class Model_profiles(Modelo_from_nc):
         #L = ((Lat-lat)**2+((Lon-lon)*fac)**2)**.5
         #L = L*60*1852
 
-        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<(rmax/1856./60.)]
-        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<(rmax/1856./60.)]
+        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<(dLmax/1856./60.)]
+        #nX = numpy.nonzero(abs(self['xt_ocean']-lon)<(dLmax/1856./60.))
+        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<(dLmax/1856./60.)]
+        #nY = numpy.nonzero(abs(self['yt_ocean']-lat)<(dLmax/1856./60.))
 
         profile = {'depth':self['st_ocean']}
         profile['lon'] = self['xt_ocean'][nX[0]:nX[-1]+1]
+        #profile['lon'] = self['xt_ocean'][nX]
         profile['lat'] = self['yt_ocean'][nY[0]:nY[-1]+1]
+        #profile['lat'] = self['yt_ocean'][nY]
 
         profile[var] = ma.masked_values(self.dataset.variables[var][nt,:,nY[0]:nY[-1]+1,nX[0]:nX[-1]+1],value=self.dataset.variables[var].missing_value)
         #profile = ma.masked_values(self.dataset[var][nt,:,nY:nY+1,nX:nX+1],value=self.dataset[var].missing_value)
