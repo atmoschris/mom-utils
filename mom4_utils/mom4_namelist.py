@@ -52,9 +52,9 @@ def yaml2nml(cfg):
             parameters = cfg[k].keys()
             parameters.sort()
             for kk in parameters:
-                if cfg[k][kk] == False:
+                if cfg[k][kk] is False:
                     v = '.false.'
-                elif cfg[k][kk] == True:
+                elif cfg[k][kk] is True:
                     v = '.true.'
                 else:
                     v = cfg[k][kk]
