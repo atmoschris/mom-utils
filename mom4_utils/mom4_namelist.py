@@ -52,6 +52,12 @@ def yaml2nml(cfg):
             parameters = cfg[k].keys()
             parameters.sort()
             for kk in parameters:
-                output.append("    %s = %s,\n" % (kk, cfg[k][kk]))
+                if cfg[k][kk] == False:
+                    v = '.false.'
+                elif cfg[k][kk] == True:
+                    v = '.true.'
+                else:
+                    v = cfg[k][kk]
+                output.append("    %s = %s,\n" % (kk, v))
         output.append("/\n\n")
     return "".join(output)
