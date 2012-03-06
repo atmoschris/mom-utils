@@ -53,19 +53,19 @@ if args[0] in ['compare', 'co']:
     tmp = ""
     for g in groups:
         if (g in cfg.keys()) and (g not in cfg2.keys()):
-            tmp+="Only in %s: %s\n" % (args[1], g)
+            tmp+="Only in \033[93m%s\033[0m: \033[93m%s\033[0m\n" % (args[1], g)
         elif (g not in cfg.keys()) and (g in cfg2.keys()):
-            tmp+="Only in %s: %s\n" % (args[2], g)
+            tmp+="Only in \033[93m%s\033[0m: \033[93m%s\033[0m\n" % (args[2], g)
         elif (g in cfg.keys()) and (g in cfg2.keys()):
             if cfg[g] != cfg2[g]:
                 gtmp = ""
                 for p in list(set(cfg[g].keys()+cfg2[g].keys())):
                     if (p in cfg[g].keys()) and (p not in cfg2[g].keys()):
-                      gtmp+="\tOnly in %s: %s(%s)\n" % (args[1], p, cfg[g][p])
+                      gtmp+="\tOnly in \033[93m%s\033[0m: \033[93m%s(%s)\033[0m\n" % (args[1], p, cfg[g][p])
                     elif (p not in cfg[g].keys()) and (p in cfg2[g].keys()):
-                      gtmp+="\tOnly in %s: %s(%s)\n" % (args[2], p, cfg2[g][p])
+                      gtmp+="\tOnly in \033[93m%s\033[0m: \033[93m%s(%s)\033[0m\n" % (args[2], p, cfg2[g][p])
                     elif cfg[g][p] != cfg2[g][p]:
-                      gtmp+="\t%s is different (%s X %s)\n" % (p, cfg[g][p], cfg2[g][p])
+                      gtmp+="\t\033[91m%s\033[0m is different \033[91m(%s X %s)\033[0m\n" % (p, cfg[g][p], cfg2[g][p])
                 if len(gtmp)>0:
                     tmp+="%s\n" % g
                     tmp+=gtmp
