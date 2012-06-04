@@ -108,6 +108,32 @@ class Modelo_from_dap(UserDict):
 
 from UserDict import UserDict
 
+class MAFromNC(object):
+    """   
+    """  
+    def __init__(self, ref):
+        self.ref = ref
+        self.shape = self.ref.shape
+        self.dtype = self.ref.dtype
+        self.units = self.ref.units
+        #self.copy = self[:].copy # Not sure if it will work
+    def __getitem__(self, key):
+        if hasattr(self.ref,'missing_value'):
+            return ma.masked_values(self.ref[key], self.ref.missing_value)
+        else:
+            return ma.array(self.ref[key])
+    #def __setitem__(self, key, value):
+    #    if type(value) == numpy.ma.core.MaskedArray:
+    #        #self.ref[key] = value.filled()
+    #        tmp = value.data 
+    #        tmp[value.mask] = self.ref._v_attrs.missing_value
+    #        self.ref[key] = tmp
+    #    else:
+    #        self.ref[key] = value
+
+
+
+import netCDF4
 class Modelo_from_nc(dict):
     """
     """
@@ -115,14 +141,21 @@ class Modelo_from_nc(dict):
         """
         """
         super(Modelo_from_nc, self).__init__()
-        import netCDF4
         self.dataset = netCDF4.Dataset(ncfpath)
+        #self.close = self.dataset.close
         self.data = {}
-	self._set_datetime()
-        return
+        self.loaddata()
+    def loaddata(self):
+        self._set_datetime()
+        # Improve this. It should be in a conditional and load only when
+        #   requested. For now, this will work
+        for var in ['xu_ocean', 'yu_ocean', 'st_ocean', 'st_edges_ocean', 
+          'xt_ocean', 'yt_ocean', 'sw_ocean', 'sw_edges_ocean', 'hu']:
+            if var in self.dataset.variables.keys():
+                self.data[var] = ma.array(self.dataset.variables[var][:])
+
     def _set_datetime(self):
         """
-
 	    Should I really do it right the way, automatically?
         """
 	if 'time' in self.dataset.variables:
@@ -140,7 +173,8 @@ class Modelo_from_nc(dict):
         """
         if index in self.data.keys():
             return self.data[index]
-        if index in self.data.keys():
+        else:
+            self.data[index] = MAFromNC(self.dataset.variables[index])
             return self.data[index]
         field = self.dataset.variables[index]
         if (index,) == field.dimensions:
@@ -198,7 +232,7 @@ class Model_profiles(Modelo_from_nc):
         return {'depth':self['st_ocean'],var:profile,'lon':self['xt_ocean'][nx],'lat':self['yt_ocean'][ny]}
         #return profile
 
-    def around_profile(self, t, lon, lat, var, dLmax, dtmax=None):
+    def around_profile(self, t, lon, lat, var, rmax):
         """
         
             !!ATENTION!! There are a lot of problems on this approach for big distances,
@@ -206,14 +240,7 @@ class Model_profiles(Modelo_from_nc):
 
             Improve it to actually calculate the distances.
         """
-        dt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal())
-        if tmax == None:
-            nt = dt.argmin()
-        #else:
-        #    #from datetime import timedelta
-        #    #dt = timedelta(tmax)
-
- 
+        nt = numpy.absolute(ma.array([d.toordinal() for d in self['datetime']])-t.toordinal()).argmin()
         #from fluid.common.distance import distance
         #Lon, Lat = numpy.meshgrid(model_ref['xt_ocean'], model_ref['yt_ocean'])
         ##L = distance(lon = Lon, lat = Lat, lon_c = lon, lat_c = lat)
@@ -221,16 +248,12 @@ class Model_profiles(Modelo_from_nc):
         #L = ((Lat-lat)**2+((Lon-lon)*fac)**2)**.5
         #L = L*60*1852
 
-        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<(dLmax/1856./60.)]
-        #nX = numpy.nonzero(abs(self['xt_ocean']-lon)<(dLmax/1856./60.))
-        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<(dLmax/1856./60.)]
-        #nY = numpy.nonzero(abs(self['yt_ocean']-lat)<(dLmax/1856./60.))
+        nX = numpy.arange(self['xt_ocean'].shape[0])[abs(self['xt_ocean']-lon)<(rmax/1856./60.)]
+        nY = numpy.arange(self['yt_ocean'].shape[0])[abs(self['yt_ocean']-lat)<(rmax/1856./60.)]
 
         profile = {'depth':self['st_ocean']}
         profile['lon'] = self['xt_ocean'][nX[0]:nX[-1]+1]
-        #profile['lon'] = self['xt_ocean'][nX]
         profile['lat'] = self['yt_ocean'][nY[0]:nY[-1]+1]
-        #profile['lat'] = self['yt_ocean'][nY]
 
         profile[var] = ma.masked_values(self.dataset.variables[var][nt,:,nY[0]:nY[-1]+1,nX[0]:nX[-1]+1],value=self.dataset.variables[var].missing_value)
         #profile = ma.masked_values(self.dataset[var][nt,:,nY:nY+1,nX:nX+1],value=self.dataset[var].missing_value)
