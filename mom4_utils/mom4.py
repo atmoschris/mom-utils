@@ -142,7 +142,7 @@ class Modelo_from_nc(dict):
         """
         super(Modelo_from_nc, self).__init__()
         self.dataset = netCDF4.Dataset(ncfpath)
-        #self.close = self.dataset.close
+        self.close = self.dataset.close
         self.data = {}
         self.loaddata()
     def loaddata(self):
