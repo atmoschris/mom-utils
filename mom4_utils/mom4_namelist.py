@@ -87,3 +87,47 @@ def yaml2nml(cfg, key_order=None):
                 output.append("    %s = %s,\n" % (kk, v))
         output.append("/\n\n")
     return "".join(output)
+
+
+# Under work.
+#filename = "/Users/castelao/work/projects/INPE/repos/Modelos/MOM4p1/src/mom4p1/ocean_diag/ocean_drifters.F90"
+#filename = "/Users/castelao/work/projects/INPE/repos/Modelos/MOM4p1/src/mom4p1/ocean_core/ocean_barotropic.F90"
+#f = open(filename)
+#text = f.read()
+#f.close()
+
+import re
+
+charref = re.compile(r"""
+    namelist\ +/(?P<namelist>\w*)/   # Name of the namelist
+    (?P<parameters>
+      (?:
+        (?:           # Along one line
+          \t?\ *
+          (\w+)       # The Parameter
+          ,?          # Comma and space if there is more than one
+        )+
+        \ *\&\ *
+        \s
+      )+
+    )
+""", re.VERBOSE)
+
+#charref = re.compile(r'''namelist\ /(?P<namelist>\w*)/\ (?P<parameters>.*?)[^\&\ *]$''', re.DOTALL)
+#parameters = map(strip, parameters)
+#parameters = parameters.replace('&', '').split(',')
+#parameters = map(strip, parameters)
+
+charref = re.compile(r"""
+        .*\n\t.*
+        """, re.VERBOSE)
+
+
+#charref.search(text).groupdict()
+
+
+
+
+
+
+
