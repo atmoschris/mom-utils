@@ -28,3 +28,18 @@ def layout(n, factor=1):
     possibilities = [(n / d, d) for d in divisors(n) if n / d >= d]
     possibilities.sort(key=lambda x: abs(float(n / x[1] ** 2) - factor))
     return possibilities[0]
+
+
+def get_output_files(cfg):
+    """
+
+        Example
+        cfg = {'data_path': '/Tupa/simulations/exp048/dataout',
+               'filename_pattern': 'cgcm2.2_currents_.*\.nc'}
+    """
+    # Create files list
+    filenames = [f for f in os.listdir(cfg['data_path']) if re.match(cfg['filename_pattern'],f)]
+    filenames.sort()
+    # Include the path to the files
+    ncfpaths = [os.path.join(cfg['data_path'],f) for f in filenames]
+    return ncfpaths
