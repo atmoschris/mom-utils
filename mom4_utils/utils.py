@@ -2,6 +2,7 @@ import time
 import sys
 import math
 import os
+import re
 
 
 def spin(times, interval=1):
