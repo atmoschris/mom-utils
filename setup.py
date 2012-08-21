@@ -11,7 +11,7 @@ import sys
 from distutils import log
 
 long_desc = ''' '''
-requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4']
+requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4', 'DateUtils']
 
 setup(
     name='mom4_utils',
