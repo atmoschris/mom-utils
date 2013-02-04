@@ -90,8 +90,8 @@ print "args", args
 #f = open(options.namelist, 'r')
 #text = f.read()
 #text = text.replace('\t',' ')
-#cfg = yaml.load(text)
-##cfg = yaml.load(ref_text)
+#cfg = yaml.safe_load(text)
+##cfg = yaml.safe_load(ref_text)
 
 #print "heyhey"
 #print cfg
@@ -99,7 +99,7 @@ print "args", args
 
 #f = open('input.yaml','r')
 #text = f.read()
-#cfg = yaml.load(text)
+#cfg = yaml.safe_load(text)
 
 #print yaml.dump(cfg_ref, default_flow_style=False)
 

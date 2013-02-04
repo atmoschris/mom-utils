@@ -28,7 +28,7 @@ def nml_decode(text):
                 tmp = True
             output.append("  %s: %s\n" % (p[0], tmp))
     textout = "".join(output)
-    return yaml.load(textout)
+    return yaml.safe_load(textout)
 
 # Working on
 #group_pattern = """
@@ -57,7 +57,7 @@ def yaml2nml(cfg, key_order=None):
 
     for k in key_order:
         output.append(" &%s\n" % k)
-        if cfg[k] != None:
+        if cfg[k] is not None:
             parameters = cfg[k].keys()
             parameters.sort()
             for kk in parameters:
@@ -96,8 +96,6 @@ def yaml2nml(cfg, key_order=None):
 #text = f.read()
 #f.close()
 
-import re
-
 charref = re.compile(r"""
     namelist\ +/(?P<namelist>\w*)/   # Name of the namelist
     (?P<parameters>
@@ -124,10 +122,3 @@ charref = re.compile(r"""
 
 
 #charref.search(text).groupdict()
-
-
-
-
-
-
-
