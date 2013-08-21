@@ -14,14 +14,14 @@ long_desc = ''' '''
 requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4', 'DateUtils']
 
 setup(
-    name='mom4_utils',
-    version='1.0',
+    name='mom-utils',
+    version='1.1',
     url='https://github.com/castelao/mom-utils',
     #download_url='https://bitbucket.org/castelao/mom4-utils',
     license='PSF',
     author='Guilherme Castelao, Luiz Irber',
     author_email='guilherme@castelao.net, luiz.irber@gmail.com',
-    description='',
+    description='Python utilities for the GFDL\'s numerical model MOM',
     long_description=long_desc,
     zip_safe=True,
     classifiers=[
