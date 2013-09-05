@@ -3,7 +3,7 @@
 from optparse import OptionParser
 
 import yaml
-from mom4_utils import nml_decode, yaml2nml
+from mom_utils import nml_decode, yaml2nml
 
 
 # ==== Parsing the options on command line

@@ -14,9 +14,9 @@ long_desc = ''' '''
 requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4', 'DateUtils']
 
 setup(
-    name='mom-utils',
-    version='1.1.1',
-    url='https://github.com/castelao/mom-utils',
+    name='mom_utils',
+    version='1.1.2',
+    url='https://github.com/castelao/mom_utils',
     #download_url='https://bitbucket.org/castelao/mom4-utils',
     license='PSF',
     author='Guilherme Castelao, Luiz Irber',
