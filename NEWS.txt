@@ -1,0 +1,9 @@
+News
+====
+
+before 1.1.4
+------------
+
+* mom4_namelist: An application to parse and manipulate the input.nml
+* Including some documentation
+* First release was some point at 2011, I'm not sure when.

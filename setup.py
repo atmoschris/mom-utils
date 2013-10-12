@@ -10,19 +10,24 @@ import os
 import sys
 from distutils import log
 
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
+NEWS = open(os.path.join(here, 'NEWS.txt')).read()
+
+
 long_desc = ''' '''
 requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4', 'DateUtils']
 
 setup(
     name='mom-utils',
-    version='1.1.3',
+    version='1.1.4',
     url='https://github.com/castelao/mom-utils',
     #download_url='https://bitbucket.org/castelao/mom4-utils',
     license='PSF',
     author='Guilherme Castelao, Luiz Irber',
     author_email='guilherme@castelao.net, luiz.irber@gmail.com',
     description='Python utilities for the GFDL\'s numerical model MOM',
-    long_description=long_desc,
+    long_description=README + '\n\n' + NEWS,
     zip_safe=True,
     classifiers=[
         'Development Status :: 4 - Beta',
