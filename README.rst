@@ -26,13 +26,13 @@ Some uses:
 
     nml_text = open('input.nml', 'r').read()
 
-    cfg = nml_decode(nml_text)
+    cfg = mom_utils.nml_decode(nml_text)
 
     cfg['ocean_model_nml']['dt_ocean'] = 7200
 
     output = open('input2.nml', 'w')
 
-    output.write(yaml2nml(cfg))
+    output.write(mom_utils.yaml2nml(cfg))
 
 License
 -------
