@@ -18,7 +18,7 @@ To install:
 
 Some uses:
 
-* The input.nml do not require any order, so it is usually not fun to compare two different input.nml. This command is different then a regular diff, since it doesn't care abour the order of the variables. The output show what is different, or what is present in only one of the files.
+* The input.nml do not require any order, so it is usually not fun to compare two different input.nml. This command is different then a regular diff, since it doesn't care about the order of the variables. The output show what is different, or what is defined in only one of the files.
 
     mom4_namelist compare input.nml input2.nml
 
