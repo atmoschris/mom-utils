@@ -25,9 +25,13 @@ Some uses:
 * Inside python, one can read an input.nml setup, change one parameter, and write into another input2.nml like this:
 
     nml_text = open('input.nml', 'r').read()
+
     cfg = nml_decode(nml_text)
+
     cfg['ocean_model_nml']['dt_ocean'] = 7200
+
     output = open('input2.nml', 'w')
+
     output.write(yaml2nml(cfg))
 
 License
