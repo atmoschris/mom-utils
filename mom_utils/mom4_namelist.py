@@ -8,7 +8,13 @@ import re
 
 
 def nml_decode(text):
-    """
+    """ Decode a MOM's namelist as a YAML
+
+        Input: A nml content as a string
+        Output: A YAML object
+
+        f = open('input.nml', 'r')
+        nml = nml_decode(r.read())
     """
     output = []
     text = re.sub("\t", " ", text)
