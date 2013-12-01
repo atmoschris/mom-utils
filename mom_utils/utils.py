@@ -45,3 +45,59 @@ def get_output_files(cfg):
     # Include the path to the files
     ncfpaths = [os.path.join(cfg['data_path'],f) for f in filenames]
     return ncfpaths
+
+
+def extract_namelist(filename):
+    """ Extract the namelist and its parameters form a FORTRAN file
+
+        Something like:
+        n = extract_namelist('path/to/ocean_solo.F90')
+        n['namelist'] -> ocean_solo_nml
+        n['parameters'] -> ['date_init', 'calendar', 'months', 'days',...]
+    """
+    text = open(filename).read()
+    r = '''
+    namelist\ +
+    /(?P<namelist>\w+)/
+    \ +
+    (?P<parameters>
+        (?:
+            \w+
+            .*&
+            \s*
+        )*
+        (?:
+            \w+
+            .*
+            \s*
+        )
+    )
+    '''
+    content_re = re.compile(r, re.VERBOSE)
+    match = re.search(content_re, text)
+    if match:
+        return match.groupdict()
+
+
+def make_file_list(inputdir, inputpattern):
+    """ Search inputdir recursively for inputpattern
+    """
+    inputfiles = []
+    for dirpath, dirnames, filenames in os.walk(inputdir):
+        for filename in filenames:
+            if re.match(inputpattern, filename):
+                inputfiles.append(os.path.join(dirpath, filename))
+    inputfiles.sort()
+    return inputfiles
+
+
+def harvest_namelist(basepath, inputpattern=".*F90"):
+    """ Harvest namelist and its parameters from a dir of F90 files
+    """
+    filenames = make_file_list(basepath, inputpattern)
+    data = {}
+    for filename in filenames:
+        c = extract_namelist(filename)
+        if c is not None:
+            data[c['namelist']] = re.findall('(\w+),?', c['parameters'])
+    return data
