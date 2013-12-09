@@ -91,10 +91,15 @@ def make_file_list(inputdir, inputpattern):
     return inputfiles
 
 
-def harvest_namelist(basepath, inputpattern=".*F90"):
+def harvest_namelist(basepath, filepattern=".*F90"):
     """ Harvest namelist and its parameters from a dir of F90 files
+
+        input:
+           basepath: The base path to the MOM source code
+           filepattern: The filename pattern in regexp to consider.
+               default is ".*F90"
     """
-    filenames = make_file_list(basepath, inputpattern)
+    filenames = make_file_list(basepath, filepattern)
     data = {}
     for filename in filenames:
         c = extract_namelist(filename)
