@@ -40,10 +40,11 @@ def get_output_files(cfg):
                'filename_pattern': 'cgcm2.2_currents_.*\.nc'}
     """
     # Create files list
-    filenames = [f for f in os.listdir(cfg['data_path']) if re.match(cfg['filename_pattern'],f)]
+    filenames = [f for f in os.listdir(cfg['data_path'])
+            if re.match(cfg['filename_pattern'], f)]
     filenames.sort()
     # Include the path to the files
-    ncfpaths = [os.path.join(cfg['data_path'],f) for f in filenames]
+    ncfpaths = [os.path.join(cfg['data_path'], f) for f in filenames]
     return ncfpaths
 
 
