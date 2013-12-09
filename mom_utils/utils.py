@@ -57,7 +57,9 @@ def extract_namelist(filename):
     """
     text = open(filename).read()
     r = '''
-    namelist\ +
+    (?:namelist|NAMELIST)
+    \ +
+    #/\ ?(?P<namelist>\w+)\ ?/
     /(?P<namelist>\w+)/
     \ +
     (?P<parameters>
@@ -69,8 +71,12 @@ def extract_namelist(filename):
         (?:
             \w+
             .*
-            \s*
         )
+        |
+        (?:
+            \ *
+        )
+        \s*
     )
     '''
     content_re = re.compile(r, re.VERBOSE)
