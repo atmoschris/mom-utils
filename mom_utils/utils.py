@@ -79,10 +79,18 @@ def extract_namelist(filename):
         \s*
     )
     '''
+
     content_re = re.compile(r, re.VERBOSE)
-    match = re.search(content_re, text)
-    if match:
-        return match.groupdict()
+    out = {}
+    if re.search(content_re, text):
+        for nml in re.finditer(content_re, text):
+            tmp = nml.groupdict()
+            if tmp['namelist'] not in out.keys():
+                out[tmp['namelist']] = {}
+
+            tmp['parameters'] = re.findall('(\w+),?', tmp['parameters'])
+            out[tmp['namelist']] = tmp['parameters']
+    return out
 
 
 def make_file_list(inputdir, inputpattern):
@@ -108,7 +116,7 @@ def harvest_namelist(basepath, filepattern=".*F90"):
     filenames = make_file_list(basepath, filepattern)
     data = {}
     for filename in filenames:
-        c = extract_namelist(filename)
-        if c is not None:
-            data[c['namelist']] = re.findall('(\w+),?', c['parameters'])
+        nml = extract_namelist(filename)
+        for n in nml.keys():
+            data[n] = nml[n]
     return data
