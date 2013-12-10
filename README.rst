@@ -20,7 +20,7 @@ Some uses:
 
 * The input.nml do not require any order, so it is usually not fun to compare two different input.nml. This command is different then a regular diff, since it doesn't care about the order of the variables. The output show what is different, or what is defined in only one of the files.
 
-    mom4_namelist compare input.nml input2.nml
+    mom_namelist compare input.nml input2.nml
 
 * Inside python, one can read an input.nml setup, change one parameter, and write into another input2.nml like this:
 
@@ -33,6 +33,10 @@ Some uses:
     output = open('input2.nml', 'w')
 
     output.write(mom_utils.yaml2nml(cfg))
+
+* Some namelists/parameters changed or disapear between MOM4 and MOM5. The task "check" evaluates if all namelists/parameters in the input.nml are declared in the code.
+
+    mom_namelist check --momsrc=mom/src myexperiments/exp1/input.nml
 
 License
 -------

@@ -1,6 +1,13 @@
 News
 ====
 
+1.2
+---
+
+* mom4_namelist renamed to mom_namelist.
+
+* New task "check" for mom_namelist.
+
 before 1.1.4
 ------------
 
