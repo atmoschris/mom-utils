@@ -4,6 +4,7 @@ from optparse import OptionParser
 
 import yaml
 from mom_utils import nml_decode, yaml2nml
+from mom_utils.utils import check_namelist_exist
 
 
 # ==== Parsing the options on command line
@@ -20,11 +21,13 @@ parser.add_option("-o", "--output", dest="output",
 parser.add_option("-r", "--referencefile", dest="reference",
                   help="Reference filename", default="./input.ref",
                   metavar="ref.yaml")
+parser.add_option("--momsrc", dest="momsrc",
+                  help="Path to MOM source code",)
 
 (options, args) = parser.parse_args()
 
 
-tasks = ['nml2yaml', 'n2y', 'compare', 'co']
+tasks = ['nml2yaml', 'n2y', 'compare', 'co', 'check']
 
 if args[0] not in tasks:
     print "Check the help"
@@ -76,12 +79,25 @@ if args[0] in ['compare', 'co']:
     else:
         print tmp
 
-print " ================== "
-print " ================== "
+if args[0] in ['check']:
+    print "Hay, I'll check it"
 
-print "options", dir(options)
-print options.namelist
-print "args", args
+    nml = check_namelist_exist(options.momsrc, args[1])
+    tmp = "\033[91mThese namelists/parameters do not exist in the source code:\033[0m\n"
+    print tmp
+    for n in nml:
+        tmp += "%s\n" % n
+        if nml[n] is not None:
+            for p in nml[n]:
+                tmp += "\t%s\n" % p
+    print tmp
+
+#print " ================== "
+#print " ================== "
+#
+#print "options", dir(options)
+#print options.namelist
+#print "args", args
 
 
 #cfg = nml_decode(text)
