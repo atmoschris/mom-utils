@@ -41,7 +41,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     platforms='any',
-    scripts=["bin/mom4_namelist"],
+    scripts=["bin/mom_namelist"],
     packages=find_packages(),
     include_package_data=True,
     install_requires=requires,
