@@ -84,7 +84,6 @@ if args[0] in ['check']:
 
     nml = check_namelist_exist(options.momsrc, args[1])
     tmp = "\033[91mThese namelists/parameters do not exist in the source code:\033[0m\n"
-    print tmp
     for n in nml:
         tmp += "%s\n" % n
         if nml[n] is not None:
