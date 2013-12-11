@@ -65,7 +65,7 @@ def extract_namelist(filename):
     \ +
     (?P<parameters>
         (?:
-            \w+
+            #\w+
             .*&
             \s*
         )*
