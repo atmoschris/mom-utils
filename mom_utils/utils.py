@@ -122,14 +122,14 @@ def harvest_namelist(basepath, filepattern=".*F90"):
             data[n] = nml[n]
     return data
 
-def check_namelist_exist(src_path, input_nml_path):
+def check_namelist_exist(src_path, input_nml):
     """ Check if all nml exist in the src
 
         It loads inputnml, an input.nml file, parse all namelists
           and check if they exist in the MOM5 src code at srcpath
     """
-    from mom_utils.mom4_namelist import nml_decode
-    input_nml = nml_decode(open(input_nml_path).read())
+    #from mom_utils.mom4_namelist import nml_decode
+    #input_nml = nml_decode(open(input_nml_path).read())
 
     src_nml = harvest_namelist(src_path)
 
