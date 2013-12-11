@@ -146,3 +146,43 @@ def check_namelist_exist(src_path, input_nml):
                     nonexitent[nml][p] = None
 
     return nonexitent
+
+def convert_inputnml_mom4_to_mom5(inputnml):
+    """ This is a damn ugly way to do it!!!! Shame on you Gui!
+    """
+    assert type(inputnml) == dict, "inputnml should be a dictionary"
+
+    m4to5 = {
+        "ocean_vert_kpp_nml": "ocean_vert_kpp_mom4p1",
+        "ocean_vert_kpp_iow_nml": None,
+        "ocean_polar_filter_nml": None,
+        "ocean_time_filter_nml": None,
+        }
+
+    p4to5 = {
+            "ocean_density_nml": {"linear_eos": "eos_linear",},
+            "ocean_frazil_nml": {"freezing_temp_accurate": "freezing_temp_teos10",},
+            # To reproduce, probably use freezing_temp_preteos10, but the best option might be freezing_temp_teos10}
+            "ocean_barotropic_nml":
+                {"barotropic_time_stepping_mom4p0": "barotropic_time_stepping_A",
+                "barotropic_time_stepping_mom4p1": "barotropic_time_stepping_B",
+                "barotropic_pred_corr": None,
+                "barotropic_leap_frog": None,},
+                }
+
+    for nml in m4to5.keys():
+        if nml in inputnml:
+            if m4to5[nml] is str:
+                inputnml[m4to5[nml]] = inputnml[nml]
+            del inputnml[nml]
+
+    for nml in p4to5:
+        if nml in inputnml:
+            for p in p4to5[nml]:
+                if p in inputnml[nml]:
+                    if p4to5[nml][p] is not None:
+                        inputnml[nml][p4to5[nml][p]] = inputnml[nml][p]
+                    del inputnml[nml][p]
+
+    return inputnml
+
