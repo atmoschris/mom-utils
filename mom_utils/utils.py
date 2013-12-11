@@ -172,8 +172,8 @@ def convert_inputnml_mom4_to_mom5(inputnml):
 
     for nml in m4to5.keys():
         if nml in inputnml:
-            if m4to5[nml] is str:
-                inputnml[m4to5[nml]] = inputnml[nml]
+            if m4to5[nml] is not None:
+                inputnml[m4to5[nml]] = inputnml[nml].copy()
             del inputnml[nml]
 
     for nml in p4to5:
