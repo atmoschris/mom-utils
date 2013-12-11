@@ -4,7 +4,7 @@ from optparse import OptionParser
 
 import yaml
 from mom_utils import nml_decode, yaml2nml
-from mom_utils.utils import check_namelist_exist
+from mom_utils.utils import check_namelist_exist, convert_inputnml_mom4_to_mom5
 
 
 # ==== Parsing the options on command line
@@ -27,7 +27,7 @@ parser.add_option("--momsrc", dest="momsrc",
 (options, args) = parser.parse_args()
 
 
-tasks = ['nml2yaml', 'n2y', 'compare', 'co', 'check']
+tasks = ['nml2yaml', 'n2y', 'compare', 'co', 'check', '4to5']
 
 if args[0] not in tasks:
     print "Check the help"
@@ -81,8 +81,11 @@ if args[0] in ['compare', 'co']:
 
 if args[0] in ['check']:
     print "Hay, I'll check it"
+    print "reading file: %s", args[1]
+    text = open(args[1]).read()
+    inputnml = nml_decode(text)
 
-    nml = check_namelist_exist(options.momsrc, args[1])
+    nml = check_namelist_exist(options.momsrc, inputnml)
     tmp = "\033[91mThese namelists/parameters do not exist in the source code:\033[0m\n"
     for n in nml:
         tmp += "%s\n" % n
@@ -90,6 +93,15 @@ if args[0] in ['check']:
             for p in nml[n]:
                 tmp += "\t%s\n" % p
     print tmp
+
+if args[0] in ['4to5']:
+    #print "Hay, I'll convert it from MOM4 to MOM5"
+    #print "reading file: %s", args[1]
+    text = open(args[1]).read()
+    inputnml = nml_decode(text)
+
+    inputnml = convert_inputnml_mom4_to_mom5(inputnml)
+    print yaml2nml(inputnml)
 
 #print " ================== "
 #print " ================== "
