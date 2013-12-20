@@ -38,6 +38,10 @@ Some uses:
 
     mom_namelist check --momsrc=mom/src myexperiments/exp1/input.nml
 
+* Task 4to5 converts a namelist for MOM4 to a namelist for MOM5
+
+    mom_namelist 4to5 input.nml > ./input.nml.new
+
 License
 -------
 
