@@ -153,7 +153,7 @@ def convert_inputnml_mom4_to_mom5(inputnml):
     assert type(inputnml) == dict, "inputnml should be a dictionary"
 
     m4to5 = {
-        "ocean_vert_kpp_nml": "ocean_vert_kpp_mom4p1",
+        "ocean_vert_kpp_nml": "ocean_vert_kpp_mom4p1_nml",
         "ocean_vert_kpp_iow_nml": None,
         "ocean_polar_filter_nml": None,
         "ocean_time_filter_nml": None,
