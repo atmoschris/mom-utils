@@ -62,10 +62,18 @@ if args[0] in ['compare', 'co']:
         elif (g in cfg.keys()) and (g in cfg2.keys()):
             if cfg[g] != cfg2[g]:
                 gtmp = ""
-                for p in list(set(cfg[g].keys()+cfg2[g].keys())):
-                    if (p in cfg[g].keys()) and (p not in cfg2[g].keys()):
+                if cfg[g] is None:
+                    keys1 = []
+                else:
+                    keys1 = cfg[g].keys()
+                if cfg2[g] is None:
+                    keys2 = []
+                else:
+                    keys2 = cfg2[g].keys()
+                for p in list(set(keys1 + keys2)):
+                    if (p in keys1) and (p not in keys2):
                       gtmp+="\tOnly in \033[93m%s\033[0m: \033[93m%s(%s)\033[0m\n" % (args[1], p, cfg[g][p])
-                    elif (p not in cfg[g].keys()) and (p in cfg2[g].keys()):
+                    elif (p not in keys1) and (p in keys2):
                       gtmp+="\tOnly in \033[93m%s\033[0m: \033[93m%s(%s)\033[0m\n" % (args[2], p, cfg2[g][p])
                     elif cfg[g][p] != cfg2[g][p]:
                       gtmp+="\t\033[91m%s\033[0m is different \033[91m(%s X %s)\033[0m\n" % (p, cfg[g][p], cfg2[g][p])
