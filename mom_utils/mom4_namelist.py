@@ -92,6 +92,10 @@ def yaml2nml(cfg, key_order=None):
                     v = '.FALSE.'
                 elif v is True:
                     v = '.TRUE.'
+                elif type(v) is list:
+                    v = '"'+'", "'.join(v)+'"'
+                elif type(v) is str:
+                    v = v.decode('string_escape')
                 else:
                     try:
                         if abs(int(v) - float(v)) == 0:
