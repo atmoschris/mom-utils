@@ -1,6 +1,11 @@
 News
 ====
 
+1.2.4
+-----
+
+* Temporary solution to allow to handle input.nml for CM, which store some lists as parameters values.
+
 1.2
 ---
 
