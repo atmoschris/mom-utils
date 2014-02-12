@@ -16,23 +16,52 @@ def nml_decode(text):
         f = open('input.nml', 'r')
         nml = nml_decode(r.read())
     """
-    output = []
     text = re.sub("\t", " ", text)
 
     # dummy way to deal with comments. Need to improve it
     text = re.sub("\s*!.*\n", "\n", text)
 
-    for namelists in re.findall("&((?:.*\n)+?)\s*/", text):
-        g = re.match("\s*(?P<groupname>\w+)\n((?:.*\n)*)", namelists).groups()
-        output.append("%s:\n" % g[0])
-        #for p in re.findall("\s+(\w+)\s*=\s*(\.?.*\.?)\s*,?\s*(!.*)\n", g[1]):
-        for p in re.findall("\s*(\w+)\s*=\s*(\.?.*\.?)\s*,?\s*\n", g[1]):
-            tmp = re.sub(",$|\s*", "", p[1])
-            if tmp == ".false." or tmp == '.FALSE.':
+    r_nml = r"""&
+        (?P<namelist>\w+)\ *\n # namelist tag, like: ocean_model_nml
+        (?P<parameters>(?:.*\n)+?)
+        \s*/"""
+    r_param = r"""
+        (?P<parameter>
+            \s*
+            (?P<pname>\w+)  # The parameter name
+            \ *=
+            )
+        \ *
+        (?P<pvalue>        # The parameter value
+            .*\n
+            (?:\s*.*\n)*?       # Can be multiple lines
+            #.*               # At least one line of value
+            )# ,? \n          #
+        (?=                  # Goes until:
+            #(?:\s*\w+\ *=)   #   next line has a new parameter
+            (?:\s*\w+\s*=)
+            |
+            $               #   or is the end of the namelist
+            )
+        """
+
+    output = []
+    for nml in re.finditer(r_nml, text, re.VERBOSE):
+        nml = nml.groupdict()
+        output.append("%s:\n" % nml['namelist'])
+        for p in re.finditer(r_param, nml['parameters'], re.VERBOSE):
+            p = p.groupdict()
+            tmp = re.sub(",$|\s*$", "", p['pvalue'])
+            # BAD BAD temporary solution
+            if re.search('("\w+",\ *)+', tmp):
+                tmp = tmp.replace('\n', '')
+                tmp = "[%s]" % tmp
+            tmp = tmp.replace('\n', '\\n')
+            if re.search('^\s*\.(?:(?:false)|(?:FALSE))\.\s*$', tmp):
                 tmp = False
             if tmp == ".true." or tmp == '.TRUE.':
                 tmp = True
-            output.append("  %s: %s\n" % (p[0], tmp))
+            output.append("  %s: %s\n" % (p['pname'], tmp))
     textout = "".join(output)
     return yaml.safe_load(textout)
 
