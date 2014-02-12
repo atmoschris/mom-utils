@@ -59,7 +59,7 @@ def nml_decode(text):
             tmp = tmp.replace('\n', '\\n')
             if re.search('^\s*\.(?:(?:false)|(?:FALSE))\.\s*$', tmp):
                 tmp = False
-            if tmp == ".true." or tmp == '.TRUE.':
+            elif re.search('^\s*\.(?:(?:true)|(?:TRUE))\.\s*$', tmp):
                 tmp = True
             output.append("  %s: %s\n" % (p['pname'], tmp))
     textout = "".join(output)
