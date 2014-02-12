@@ -65,15 +65,6 @@ def nml_decode(text):
     textout = "".join(output)
     return yaml.safe_load(textout)
 
-# Working on
-#group_pattern = """
-#(&\s*
-#(?P<groupname>\w+).*\n
-#(.*\n)+
-#)
-#"""
-#re.search(group_pattern, text, re.VERBOSE).groups()
-
 
 def yaml2nml(cfg, key_order=None):
     """
