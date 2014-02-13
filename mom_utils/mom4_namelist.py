@@ -23,7 +23,7 @@ def nml_decode(text):
 
     r_nml = r"""&
         (?P<namelist>\w+)\ *\n # namelist tag, like: ocean_model_nml
-        (?P<parameters>(?:.*\n)+?)
+        (?P<parameters>(?:.*\n)*?)
         \s*/"""
     r_param = r"""
         (?P<parameter>
