@@ -51,20 +51,23 @@ def nml_decode(text):
         output.append("%s:\n" % nml['namelist'])
         for p in re.finditer(r_param, nml['parameters'], re.VERBOSE):
             p = p.groupdict()
-            tmp = re.sub(",$|\s*$", "", p['pvalue'])
-            # BAD BAD temporary solution
-            if re.search('("\w+",\ *)+', tmp):
-                tmp = tmp.replace('\n', '')
-                tmp = "[%s]" % tmp
-            tmp = tmp.replace('\n', '\\n')
-            if re.search('^\s*\.(?:(?:false)|(?:FALSE))\.\s*$', tmp):
-                tmp = False
-            elif re.search('^\s*\.(?:(?:true)|(?:TRUE))\.\s*$', tmp):
-                tmp = True
+            tmp = parse_nmlparameter(p['pvalue'])
             output.append("  %s: %s\n" % (p['pname'], tmp))
     textout = "".join(output)
     return yaml.safe_load(textout)
 
+def parse_nmlparameter(pvalue):
+    # Remove the last comma, spaces after and line break
+    tmp = re.sub("(,?\s*)$", "", pvalue)
+    if re.search('^\s*\.(?:(?:false)|(?:FALSE))\.\s*$', tmp):
+        return False
+    elif re.search('^\s*\.(?:(?:true)|(?:TRUE))\.\s*$', tmp):
+        return True
+    # BAD BAD temporary solution
+    if re.search('("\w+",\s*)+', tmp):
+        tmp = "[%s]" % tmp
+    tmp = tmp.replace("\n", r"\n").replace('"', r'\"').replace("'", r"\'")
+    return tmp
 
 def yaml2nml(cfg, key_order=None):
     """
@@ -93,7 +96,7 @@ def yaml2nml(cfg, key_order=None):
                 elif v is True:
                     v = '.TRUE.'
                 elif type(v) is list:
-                    v = '"'+'", "'.join(v)+'"'
+                    v = ", ".join(v).decode('string_escape')
                 elif type(v) is str:
                     v = v.decode('string_escape')
                 else:
