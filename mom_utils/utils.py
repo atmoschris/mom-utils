@@ -160,9 +160,11 @@ def convert_inputnml_mom4_to_mom5(inputnml):
         }
 
     p4to5 = {
-            "ocean_density_nml": {"linear_eos": "eos_linear",},
-            "ocean_frazil_nml": {"freezing_temp_accurate": "freezing_temp_teos10",},
-            # To reproduce, probably use freezing_temp_preteos10, but the best option might be freezing_temp_teos10}
+            "ocean_density_nml": {
+                "linear_eos": "eos_linear",
+                "alpha_eos_linear": "alpha_linear_eos",
+                "beta_eos_linear": "beta_linear_eos"},
+            "ocean_frazil_nml": {"freezing_temp_accurate": None,},
             "ocean_barotropic_nml":
                 {"barotropic_time_stepping_mom4p0": "barotropic_time_stepping_A",
                 "barotropic_time_stepping_mom4p1": "barotropic_time_stepping_B",
