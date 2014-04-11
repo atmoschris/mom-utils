@@ -89,12 +89,12 @@ if args[0] in ['compare', 'co']:
 
 if args[0] in ['check']:
     print "Hay, I'll check it"
-    print "reading file: %s", args[1]
+    print "reading file: %s" % args[1]
     text = open(args[1]).read()
     inputnml = nml_decode(text)
 
     nml = check_namelist_exist(options.momsrc, inputnml)
-    tmp = "\033[91mThese namelists/parameters do not exist in the source code:\033[0m\n"
+    tmp = "\033[91mI couldn't find these namelists/parameters in the source code:\033[0m\n"
     for n in nml:
         tmp += "%s\n" % n
         if nml[n] is not None:
