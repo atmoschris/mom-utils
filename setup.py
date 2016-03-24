@@ -16,7 +16,7 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 
 long_desc = ''' '''
-requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4', 'DateUtils']
+requires = ['coards', 'numpy', 'PyYAML', 'NetCDF4']
 
 setup(
     name='mom-utils',
